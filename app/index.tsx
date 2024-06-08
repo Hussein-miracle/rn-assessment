@@ -192,7 +192,7 @@ export default function HomeScreen() {
               onEndReached={onEndReached}
               onEndReachedThreshold={0.65}
               keyExtractor={(item: NewsItem) =>
-                item.title + item?.urlToImage + Math.random()?.toString() + new Date().getTime().toString()
+                item.title + item?.urlToImage + item?.publishedAt
               }
               onScroll={(e) => {
                 // console.log({ e:e.i });
