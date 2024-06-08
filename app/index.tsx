@@ -116,16 +116,16 @@ export default function HomeScreen() {
       setTotalResults(newsDataResponse.totalResults);
       setNews((prevNews:NewsItem[]) => [...prevNews, ...newsData]);
     } catch (error: any) {
-      console.error({ error });
+      // console.error({ error });
       Alert.alert("Error", error?.message);
     } finally {
       setIsLoading(false);
     }
-  },[page,pageSize,category?.value]);
+  },[page,pageSize,category?.value,news,totalResults]);
 
 
 
-  const handleFetchMore = useCallback(async (page:number) => {
+  const handleFetchMore = useCallback(async (page:number,pageSize:number,category:NewsCategoryItem | null) => {
     setIsLoadingMore(true);
 
     try {
@@ -140,7 +140,7 @@ export default function HomeScreen() {
       setTotalResults(newsDataResponse.totalResults);
       setNews((prevNews:NewsItem[]) => [...prevNews, ...newsData]);
     } catch (error: any) {
-      console.error({ error });
+      // console.error({ error });
       Alert.alert("Error", error?.message);
     } finally {
       setIsLoadingMore(false);
@@ -152,23 +152,17 @@ export default function HomeScreen() {
       return;
     }
 
-    await handleFetchMore(page + 1,pageSize,category?.value ?? "");
+    await handleFetchMore(page + 1,pageSize,category);
     
     setPage((prevPage:number) => prevPage + 1);
-  },[page,news,totalResults,handleFetchMore]);
+  },[page,news,totalResults,handleFetchMore,category,pageSize]);
 
   return (
     <View style={styles.wrapperStyle}>
       <View style={styles.headerStyle}>
         <TextInput
           placeholder="Search news..."
-          style={{
-            padding: 10,
-            borderRadius: 10,
-            backgroundColor: "#fff",
-            width: "100%",
-            fontFamily: "SpaceMono",
-          }}
+          style={styles.headerSearchInputStyle}
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
 
@@ -177,7 +171,7 @@ export default function HomeScreen() {
       <View style={styles.listStyle}>
         <View style={styles.listHeaderStyle}>
           <Text style={styles.listHeaderTextStyle}>Today</Text>
-          <TouchableOpacity activeOpacity={0.8} onPress={handleViewAll}>
+          <TouchableOpacity activeOpacity={0.5} onPress={handleViewAll}>
             <Text style={styles.listHeaderCTATextStyle}>View&nbsp;All</Text>
           </TouchableOpacity>
         </View>
@@ -207,16 +201,10 @@ export default function HomeScreen() {
 
               ListFooterComponent={() =>
                 isLoadingMore ? (
-                  <View  style={{transform:[{translateY:-10}],flexDirection:'row',gap:10 }}>
+                  <View  style={styles.loadMoreStyle}>
                     <Spinner />
                     <Text
-                      style={{
-                        textAlign: "center",
-                        fontFamily: "SpaceMono",
-                        fontSize: 10,
-                        color: "#000",
-                        // padding: 10,
-                      }}
+                      style={styles.loadMoreTextStyle}
                     >
                       Loading
                     </Text>
@@ -248,6 +236,17 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   headerStyle: {},
+  headerSearchInputStyle: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    fontFamily: "SpaceMono",
+    fontSize: 16,
+    padding: 10,
+
+    
+  },
   listStyle: {
     flex: 1,
     gap: 20,
@@ -282,4 +281,15 @@ const styles = StyleSheet.create({
     color: "#000",
     fontFamily: "SpaceMono",
   },
+  loadMoreStyle: {
+    transform:[{translateY:-10}],flexDirection:'row',gap:10,width:"100%" 
+  },
+  loadMoreTextStyle: {
+    textAlign: "center",
+    fontFamily: "SpaceMono",
+    fontSize: 13,
+    color: "#000",
+    padding: 6,
+    
+  }
 });
