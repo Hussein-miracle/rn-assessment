@@ -147,15 +147,20 @@ export default function HomeScreen() {
     }
   },[page,pageSize,category?.value]);
 
-  const onEndReached = useCallback( async () => {
-    if (news.length >= totalResults) {
+  const onEndReached = useCallback(async () => {
+    
+    console.log({page,newsLength:news.length,totalResults,pageSize});
+    if(news.length >= totalResults || pageSize >= totalResults || page >= Math.floor(totalResults / pageSize) ){
       return;
     }
+    
+    setPage((prevPage:number) => prevPage + 1);
 
     await handleFetchMore(page + 1,pageSize,category);
     
-    setPage((prevPage:number) => prevPage + 1);
-  },[page,news,totalResults,handleFetchMore,category,pageSize]);
+
+
+  },[news.length,totalResults,pageSize,page,category,handleFetchMore])
 
   return (
     <View style={styles.wrapperStyle}>
@@ -185,10 +190,13 @@ export default function HomeScreen() {
                 paddingBottom: SCREEN_WIDTH * 0.2,
               }}
               onEndReached={onEndReached}
-              onEndReachedThreshold={0.5}
+              onEndReachedThreshold={0.65}
               keyExtractor={(item: NewsItem) =>
                 item.title + item?.urlToImage + Math.random()?.toString() + new Date().getTime().toString()
               }
+              onScroll={(e) => {
+                // console.log({ e:e.i });
+              }}
               renderItem={({ item }: { item: NewsItem }) => {
                 // console.log({ item });
                 return <NewsItemCard newsItem={item} />;
@@ -202,7 +210,7 @@ export default function HomeScreen() {
               ListFooterComponent={() =>
                 isLoadingMore ? (
                   <View  style={styles.loadMoreStyle}>
-                    <Spinner />
+                    <Spinner wrap={false} />
                     <Text
                       style={styles.loadMoreTextStyle}
                     >
@@ -282,7 +290,12 @@ const styles = StyleSheet.create({
     fontFamily: "SpaceMono",
   },
   loadMoreStyle: {
-    transform:[{translateY:-10}],flexDirection:'row',gap:10,width:"100%" 
+    transform:[{translateY:-10}],
+    flexDirection:'row',
+    gap:10,
+    width:"100%",
+    alignContent:'center',
+    justifyContent:'center', 
   },
   loadMoreTextStyle: {
     textAlign: "center",
