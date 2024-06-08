@@ -14,7 +14,7 @@ import {
   RefreshControl,
 } from "react-native";
 
-import { SCREEN_WIDTH } from "@/constants";
+import { DEFAULT_NEWS_PAGE, DEFAULT_NEWS_SIZE, SCREEN_WIDTH } from "@/constants";
 import NewsItemCard from "@/components/news-item-card/news-item-card";
 import { NewsCategoryItem, NewsItem } from "@/utils/types";
 import { fetchNews } from "@/utils/api";
@@ -71,10 +71,12 @@ export default function HomeScreen() {
   }, [news, searchQuery]);
 
 
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
+    setPage(DEFAULT_NEWS_PAGE);
+    setPageSize(DEFAULT_NEWS_SIZE);
     setIsRefreshing(true);
     try {
-      const newsDataResponse = await fetchNews(page,pageSize,category?.value ?? "");
+      const newsDataResponse = await fetchNews(DEFAULT_NEWS_PAGE,DEFAULT_NEWS_SIZE);
       // console.log({ newsDataResponse });
       if (newsDataResponse?.status === "error") {
         throw new Error(
@@ -92,20 +94,21 @@ export default function HomeScreen() {
     } finally {
       setIsRefreshing(false);
     }
-  },[page,category?.value,pageSize]);
+  };
 
 
   const handleViewAll =  useCallback(async () => {
-    if(news.length >= totalResults || pageSize >= totalResults){
+    const ceiled = Math.ceil(totalResults / pageSize);
+    if(news.length >= totalResults || pageSize >= totalResults || page >= ceiled){
       return;
     }
-    
+    setIsLoading(true);
+    // setPageSize(totalResults)
     setPageSize(totalResults);
 
-    setIsLoading(true);
 
     try {
-      const newsDataResponse = await fetchNews(page + 1,pageSize,category?.value ?? "");
+      const newsDataResponse = await fetchNews(DEFAULT_NEWS_PAGE,totalResults,category?.value ?? "");
       // console.log({ newsDataResponse });
       if (newsDataResponse?.status === "error") {
         throw new Error(
@@ -149,8 +152,9 @@ export default function HomeScreen() {
 
   const onEndReached = useCallback(async () => {
     
-    console.log({page,newsLength:news.length,totalResults,pageSize});
-    if(news.length >= totalResults || pageSize >= totalResults || page >= Math.floor(totalResults / pageSize) ){
+    // console.log({page,newsLength:news.length,totalResults,pageSize});
+    const ceiled = Math.ceil(totalResults / pageSize);
+    if(news.length >= totalResults || pageSize >= totalResults || page >= ceiled){
       return;
     }
     
@@ -190,9 +194,9 @@ export default function HomeScreen() {
                 paddingBottom: SCREEN_WIDTH * 0.2,
               }}
               onEndReached={onEndReached}
-              onEndReachedThreshold={0.65}
+              onEndReachedThreshold={0.5}
               keyExtractor={(item: NewsItem) =>
-                item.title + item?.urlToImage + item?.publishedAt
+                item.title + item?.urlToImage + item?.publishedAt  + new Date().getTime()?.toString() + Math.random().toString()
               }
               onScroll={(e) => {
                 // console.log({ e:e.i });
@@ -204,7 +208,7 @@ export default function HomeScreen() {
 
               refreshing={isRefreshing}
               refreshControl={
-                <RefreshControl refreshing={isRefreshing} colors={['#fff']} onRefresh={onRefresh} />
+                <RefreshControl refreshing={isRefreshing} colors={['#000']} onRefresh={onRefresh} />
               }
 
               ListFooterComponent={() =>

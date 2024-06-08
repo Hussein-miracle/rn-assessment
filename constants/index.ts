@@ -6,6 +6,8 @@ export const SCREEN_WIDTH = Dimensions.get("window").width;
 export const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 
+export const DEFAULT_NEWS_SIZE = 10;
+export const DEFAULT_NEWS_PAGE = 1;
 
 export const NEWS_CATEGORIES:NewsCategoryItem[] = [
   {
