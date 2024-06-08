@@ -63,8 +63,11 @@ export default function HomeScreen() {
 
   const filteredNewsData = useMemo(() => {
     if (searchQuery.length === 0) {
+      // EARLY RETURN IF SEARCH QUERY IS EMPTY
       return news;
     }
+    
+
     return news.filter((newsItem: NewsItem) =>
       newsItem?.title?.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -170,7 +173,7 @@ export default function HomeScreen() {
     <View style={styles.wrapperStyle}>
       <View style={styles.headerStyle}>
         <TextInput
-          placeholder="Search news..."
+          placeholder="Search news title..."
           style={styles.headerSearchInputStyle}
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
@@ -228,9 +231,14 @@ export default function HomeScreen() {
 
           {isLoading && <Spinner />}
 
-          {!isLoading && news?.length === 0 ? (
+          {!isLoading && (news?.length === 0) ? (
             <View style={styles.listEmptyStyle}>
               <Text style={styles.listEmptyTextStyle}>No news available</Text>
+            </View>
+          ) : null}
+          {!isLoading && (news?.length > 0 && filteredNewsData.length <= 0) ? (
+            <View style={styles.listEmptyStyle}>
+              <Text style={styles.listEmptyTextStyle}>News with that title is not available</Text>
             </View>
           ) : null}
         </View>
