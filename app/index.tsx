@@ -182,7 +182,7 @@ export default function HomeScreen() {
       </View>
       <View style={styles.listStyle}>
         <View style={styles.listHeaderStyle}>
-          <Text style={styles.listHeaderTextStyle}>Today</Text>
+          <Text style={styles.listHeaderTextStyle}>Todays</Text>
           <TouchableOpacity activeOpacity={0.5} onPress={handleViewAll}>
             <Text style={styles.listHeaderCTATextStyle}>View&nbsp;All</Text>
           </TouchableOpacity>
