@@ -172,13 +172,14 @@ export default function HomeScreen() {
   return (
     <View style={styles.wrapperStyle}>
       <View style={styles.headerStyle}>
+        
         <TextInput
           placeholder="Search news title..."
           style={styles.headerSearchInputStyle}
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
-
       />
+
       </View>
       <View style={styles.listStyle}>
         <View style={styles.listHeaderStyle}>
